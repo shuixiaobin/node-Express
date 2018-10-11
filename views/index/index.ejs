@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>CMS后台管理系统</title>
+    <link rel="stylesheet" href="/css/bootstrap3.min.css"/>
+
+    <link rel="stylesheet" href="/css/themes.css"/>
+    <script src="/js/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+<div id="header" class="header" style="z-index: 9999;">
+    <a  class="logo pull-left"></a>
+    <div class="navbar navbar-inverse nav-bar clearfix">
+        <span style="margin-left:100px;font-size:16px;color:white;text-align:center;">CMS后台管理系统</span>
+
+
+        <!--header-right-->
+        <div class="pull-right">
+
+
+            <a class="signout pull-left" title="" id="logout"><i class="icon-signout"></i><span
+                        class="text">退出账号</span> </a>
+        </div>
+        <!--end header-right-->
+    </div>
+</div>
+<div  class="sidebar" style="margin-top:50px;">
+    <ul class="menu">
+
+        <li class="submenu">
+            <a>
+                <i class="icon-glass"></i>
+                <span>部门管理</span>
+
+                <i class="pull-right fr-icon icon icon-chevron-down"></i>
+            </a>
+
+            <ul>
+
+                <li>
+                    <a class="jump-btn1" url="/department/list">部门列表</a>
+                </li>
+
+                <li>
+                    <a class="jump-btn1" url="/department/add">新增部门</a>
+                </li>
+
+
+            </ul>
+
+        </li>
+        <li class="submenu">
+            <a>
+                <i class="icon-list-alt"></i>
+                <span>餐食管理</span>
+                <i class="pull-right fr-icon icon icon-chevron-down"></i>
+            </a>
+            <ul>
+
+                <li>
+                    <a class="jump-btn1" url="/food/list">餐食列表</a>
+                </li>
+
+
+                <li>
+                    <a class="jump-btn1" url="/food/add">新增餐食</a>
+                </li>
+
+            </ul>
+
+        </li>
+
+        <li class="submenu">
+            <a>
+                <i class="icon-list-alt"></i>
+                <span>员工管理</span>
+                <i class="pull-right fr-icon icon icon-chevron-down"></i>
+            </a>
+            <ul>
+
+                <li>
+                    <a class="jump-btn1" url="/employee/list">员工列表</a>
+                </li>
+
+
+                <li>
+                    <a class="jump-btn1" url="../employee/add">新增员工</a>
+                </li>
+
+            </ul>
+
+        </li>
+
+
+
+
+        <li class="submenu">
+            <a>
+                <i class="icon-list-alt"></i>
+                <span>订餐</span>
+                <i class="pull-right fr-icon icon icon-chevron-down"></i>
+            </a>
+            <ul>
+
+                <li>
+                    <a class="jump-btn1" url="/food/detailpage">订餐统计</a>
+                </li>
+                <!--<li>-->
+                    <!--<a class="jump-btn1" url="/detail/history">历史订餐</a>-->
+                <!--</li>-->
+
+
+            </ul>
+
+        </li>
+        <li class="submenu">
+            <a>
+                <i class="icon-list-alt"></i>
+                <span>菜单管理</span>
+                <i class="pull-right fr-icon icon icon-chevron-down"></i>
+            </a>
+            <ul>
+
+                <li>
+                    <a class="jump-btn1" url="/uploadfile">上传新菜单</a>
+                </li>
+
+
+            </ul>
+
+        </li>
+    </ul>
+</div>
+<div class="content">
+    <iframe  frameborder="0" id="ifrm" width="100%" height="100%"></iframe>
+</div>
+</body>
+</html>
+<script>
+    $('.submenu').find('a').click(function(){
+        if(!$(this).parent().hasClass('open')){
+            $(this).parent().addClass('open').siblings().removeClass('open');
+        }
+        var node = $(this).find('i').eq(1);
+        if(node.hasClass('icon-chevron-down')){
+            node.removeClass('icon-chevron-down');
+            node.addClass('icon-chevron-up');
+            node.parent().next().slideDown();
+            // node.parents('li').siblings().find('ul').slideUp();
+
+        }else if(node.hasClass('icon-chevron-up')){
+            node.addClass('icon-chevron-down');
+            node.removeClass('icon-chevron-up');
+            node.parent().next().slideUp();
+            //  node.parents('li').siblings().find('ul').slideUp();
+        }
+    });
+
+    $('.jump-btn1').click(function(){
+        //alert($(this).attr('url'));
+        $('li').removeClass('active');
+        $(this).parent().addClass('active');
+        var url = $(this).attr('url');
+        $('#ifrm').attr('src',url);
+    });
+</script>

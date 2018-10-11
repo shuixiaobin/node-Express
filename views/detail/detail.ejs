@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/base.css"/>
+    <link rel="stylesheet" href="/stylesheets/login.css"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/jquery.toast.min.css"/>
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/jquery.toast.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/template.js"></script>
+    
+</head>
+<body>
+    <div class="container">
+        <ul class="nav nav-tabs dayList">
+	        <li class="active"><a onclick="choose('mon')" data-toggle="tab">周一</a></li>
+	        <li><a onclick="choose('tues')" data-toggle="tab">周二</a></li>
+	        <li><a onclick="choose('wed')" data-toggle="tab">周三</a></li>
+	        <li><a onclick="choose('thur')" data-toggle="tab">周四</a></li>
+	        <li><a onclick="choose('fri')" data-toggle="tab">周五</a></li>
+	        <li><a onclick="choose('sat')" data-toggle="tab">周六</a></li>
+	        <li><a onclick="choose('sun')" data-toggle="tab">周日</a></li>
+        </ul>
+
+            <table id="con" class="table table-striped table-responsive">
+
+
+            </table>
+
+          
+
+    </div>
+</body>
+</html>
+
+<script id="datalist" type="text/html">
+    {{each list as value key}}
+    {{each value as val}}
+        <tr>
+            <td  style="border: 1px solid #ccc;text-align: center;">
+                {{key}}
+            </td>
+
+            <td  style="border: 1px solid #ccc;text-align: center;">
+                {{val['employeeName']}}
+            </td>
+            {{each val['myorder'] as myorder}}
+                <td  style="border: 1px solid #ccc;text-align: center;padding-top:20px;">
+                    {{if myorder != -1 }}
+                        <span class="yes">
+                            <img src="/images/yes.png" style="width:20px;height:20px;" alt="">
+                        </span>
+
+
+                    {{/if}}
+                </td>
+            {{/each}}
+
+        </tr>
+    {{/each}}
+    {{/each}}
+
+
+
+</script>
+
+<script>
+    var foodData = null;
+    var soupData = [0,1,2];
+    var out_html = '';
+    $.ajax({
+        url:'/api/getMenuPic',
+        success:function(data){
+
+            var foodlist = data['foodList'];
+
+            var html = '<tr><td>部门</td><td>人员</td>';
+            for(var i=0;i<foodlist.length;i++){
+                html+='<td>'+foodlist[i]['name']+'</td>';
+            }
+            html+='<td>酸奶</td><td>饮料</td><td>汤</td>';
+
+            out_html = html;
+            foodData = foodlist;
+
+
+
+        }
+
+    });
+
+    function render(str,obj){
+
+        var html = template('datalist', {list: obj});
+        //console.log(html);
+
+        $('#con').html(str+html);
+
+    }
+    //$('.dayList').find('a').eq(0).trigger('click');
+    //choose('mon');
+    function choose(str){
+        var obj = {};
+        var arr =[];
+
+        $.ajax({
+            url:'/food/orderdetail?week='+str,
+            success:function(data){
+                //console.log(data);
+                var listdata = data['list'];
+                if(data['list']){
+                    for(var i=0;i<listdata.length;i++){
+
+                        arr.push(listdata[i]['departmentName']);
+                    }
+                    //将所有菜品数据，跟订餐表做比对，将未点的菜品，用-1填充，点的，有1表示
+                    (function(){
+                        for( var i=0;i<listdata.length;i++){
+                            listdata[i]['myorder'] = [];
+                           for(var  k = 0;k<foodData.length;k++){
+                               if(listdata[i]['foodId']==foodData[k]['id']){
+                                   listdata[i]['myorder'].push(1);
+                               }else{
+                                   listdata[i]['myorder'].push(-1);
+                               }
+
+                           }
+                           for(var j=0;j<soupData.length;j++){
+                               if(listdata[i]['drinkId']==soupData[j]){
+                                   listdata[i]['myorder'].push(1);
+                               }else{
+                                   listdata[i]['myorder'].push(-1);
+                               }
+                           }
+
+                        }
+                    })();
+
+                    for(var k=0;k<arr.length;k++){
+                        for(var j=0;j<listdata.length;j++){
+                            if(!obj[arr[k]]){
+                                obj[arr[k]] = [];
+                            }
+                            if(arr[k] == listdata[j]['departmentName']){
+                                obj[arr[k]].push(listdata[j]);
+                            }
+
+
+                        }
+                    }
+
+                }
+//                console.log(obj);
+//                var html = template('datalist', {list: obj});
+//                console.log(html);
+//                $('#con').append(html);
+                render(out_html,obj);
+            }
+        });
+    }
+
+
+
+
+</script>
